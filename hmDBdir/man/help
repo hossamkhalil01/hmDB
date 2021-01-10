@@ -1,0 +1,161 @@
+1- Conncection Command
+
+NAME
+    connect - to establish connection
+
+SYNOPSIS
+    hmDB connect [option]
+
+DESCRIPTION
+    establish connection to your database
+    
+
+OPTIONS
+    -default
+    	enters the one command mode. 
+    	hmDB + any command --> if a connection is established in the one command mode
+    -it 
+        to establish connection in interactive mode1
+
+
+2-Disconnection Command
+
+2.1)
+NAME 
+    disconnect - to disconnect from the one command mode
+
+SYNOPSIS
+    hmDB disconnect
+
+2.2)
+NAME
+    exit - to exit the interactive mode (and terminating connection)
+
+SYNOPSIS
+    exit
+
+
+
+3-DataBase Commands
+
+3.1)
+NAME
+    create - to create database
+
+SYNOPSIS
+    create database databaseName or CREATE DATABASE databaseName
+    
+DESCRIPTION 
+    create new database
+
+3.2)
+NAME
+    drop - to drop existing database
+
+SYNOPSIS
+    drop database databaseName or DROP DATABASE databaseName
+
+3.3)
+NAME
+    show - to displays all existing databases 
+
+SYNOPSIS
+    show databases or SHOW DATABASE
+
+
+3.4)
+NAME
+    close - closes the current database in use (deactivates the database in use) 
+
+SYNOPSIS
+    close
+
+
+
+4- Tables Commands
+
+4.1)
+NAME
+    show tables - list all tables in the DB
+
+SYNOPSIS
+    show tables or SHOW TABLES
+
+4.2)
+NAME
+    describe table - display the difinition of the table 
+
+SYNOPSIS
+    describe TableName or DESCRIBE tableName
+
+DESCRIPTION
+    displays all information of the table (columns names, datatypes and constraints)
+
+4.3)
+NAME
+    create table - to create new table
+
+SYNOPSIS
+    create table tableName col1Name col1_dType [col1_pk], col2_nanme col2_dType [col2_pk],..
+    or
+    CREATE TABLE tableName col1Name col1_dType [col1_pk], col2_nanme col2_dType [col2_pk],.. 
+
+4.4)
+NAME
+    drop table - to drop existing table
+
+SYNOPSIS
+    drop table tableName or DROP TABLE tableName
+    
+    
+
+5- Data Manipulation commands
+
+5.1)
+NAME
+    insert - to insert row values into specific table (supports multi-records insertion)
+
+SYNOPSIS   
+    insert into tableName values record1Values(col1_value col2_value col3_value), record2Values, ....
+    or INSERT INTO tableName values record1Values(col1_value col2_value col3_value) , .....
+
+
+DESCRIPTION
+    Inserts record or multiple records to a table (multi-records are separated by ",")
+    All non mentioned values are by default inserted as NULL
+    you can insert a value of "null" for a value to be empty (case insensitive).
+    
+5.2)
+NAME
+    select - to select data from specific table
+
+SYNOPSIS 
+    select colName from tableName [where condition] --> where colName = value or SELECT colName FROM tableName [where condition] --> where colName = value
+    or 
+    select all from tableName [where condition] --> where colName = value  or SELECT ALL FROM  tableName [where condition] --> where colName = value 
+
+5.3)
+NAME
+    delete from - to delete table or delete specific rows
+
+SYNOPSIS
+    delete from tableName (delete all recordes) or DELETE FROM tableName
+    delete from tableName [where condition] --> where colName = value     (delete specific recordes)                  
+
+DESCRIPTION
+    The DELETE statement deletes rows from table,The conditions in the optional WHERE clause identify which rows to delete. 
+    With no WHERE clause, all rows are deleted. 
+
+5.4)
+NAME    
+    update - to update recordes on the table
+
+SYNOPSIS
+    update tableName set colName = newValue (update all recordes on the table) or UPDATE tableName set colName = newValue 
+    update tableName set colName = newValue [where condition] --> where colName = value    (update specific recordes)  
+
+DESCRIPTION
+    the UPDATE statement updates columns of existing rows in the named table with new values. 
+    The SET clause indicates which columns to  modify and the values they should be given. 
+    Each value can be given as an expression.
+    The WHERE clause, if given, specifies the conditions that identify which rows to update. With no WHERE clause, all rows are updated

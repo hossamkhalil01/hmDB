@@ -1,0 +1,241 @@
+#!/bin/bash
+
+#############################################
+## This script establishes the connection###
+## Needs to be ran with sudo permission  ###
+############################################
+
+###########################################################################################
+#### Connection Establishement comands                                                    #
+###########################################################################################  
+# connect -it --> to establis connection in interactive mode                              #  
+# connect --> to establish connection in one command mode                                 #  
+# disconnect --> to disconnect from the one command mode                                  #  
+# exit --> to exit the interactive mode (and terminating connection)                      #
+# help --> to open the manual for the project                                             #
+###########################################################################################
+
+###########################################################################################
+# Available Queries on Databases                                                          #
+###########################################################################################
+#                                                                                         #
+# create database databaseName                                                            #               
+# drop database databaseName                                                              #      
+# show databases ---> displays all databases                                              #
+# use databaseName ---> Activates a database  (makes it ready for table queries)          #      
+# close --> closes the current database in use (deactivates the database in use)          #
+###########################################################################################
+
+###########################################################################################
+# Available Queries on Tables                                                             #
+###########################################################################################
+# DDLs                                                                                    #      
+######                                                                                    #  
+# show tables --> list all tables in the DB                                               #               
+# describe tableName --> display the difinition of the table                        #      
+# create table tableName col1Name col1_dType [col1_pk], col2_nanme col2_dType [col2_pk],..#
+# drop table tableName                                                                    #      
+###########################################################################################
+# DMLs                                                                                    #      
+######                                                                                    #      
+# insert into tableName values col1_value col2_value col3_value ...                       #  
+# delete from tableName [where condition] --> where colName = value                       #  
+# select colName/all (for all cols) [where condition] --> where colName = value           #  
+# update tableName set colName = newValue [where condition] --> where colName = value     #  
+###########################################################################################
+
+#check permissions
+uId=`id -u`
+
+if [ $uId != 0 ]
+then 
+    echo Permission Denined: please run the script using sudo command.
+    exit 
+fi 
+
+#obtain the path of the script
+scriptPath="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+#change working directory to the dir containing the scripts
+cd $scriptPath/hmDBdir/
+
+# Include helper functions
+source src/includes/lib.sh
+
+#Init variables 
+function init()
+{   #Expected arguments: None
+
+    #Default path for the databases directory
+    export dataPath="data/DBs/"
+    export dbTempPath="data/"
+    export infoPath="data/tmp_info"
+    export helpPath="man/help"
+
+    #variables to Carry the current opened database name and path
+    export currDB_path=""
+    export currDB_name=""
+ 
+    return 0
+}
+
+#init connection
+function connect()
+{   #Expected arguments: None
+
+    if [ -f $infoPath ] #remove the old connection
+    then 
+        rm $infoPath
+    fi 
+
+    #Create temp file to carry the variables
+    touch "$infoPath"
+
+    return 0
+}
+
+function isConnected()
+{   #Expected arguments: None
+
+    if [ -f $infoPath ]
+    then 
+        return 0 #connected
+    else 
+        return 1 #not connected 
+    fi
+}
+
+function disconnect()
+{   #Expected arguments: None
+
+    #remove the temp file
+    rm "$infoPath"
+
+    echo "Bye.."
+    exit
+}
+
+function retriveState()
+{   #Expected arguments: None
+
+    currDB_name=`sed -n '1p' "$infoPath"`
+    currDB_path=`sed -n '2p' "$infoPath"`
+
+    return 0
+}
+
+function startInteractive()
+{   #Expected arguments: command
+    
+    printf "Welcome! thank you for using hmDB."
+    printf "\nif you need help just type "help".\n\n"
+
+    local cmd
+
+    while [ true ]
+    do
+        printf "\n\n"
+        if [ -z $currDB_name ]
+        then    
+            read -p "hmDB [(none)] -> " -e cmd 
+        else 
+            read -p "hmDB [($currDB_name)] -> " -e cmd 
+        fi
+
+        if [ "$cmd" = exit ]
+        then 
+            break
+        fi 
+
+        #Init a query
+        ./src/dbms.sh "$cmd"
+        
+        #Save the data after the query execution
+        currDB_name=`sed -n '1p' "$infoPath"`
+        currDB_path=`sed -n '2p' "$infoPath"`   
+        
+    done 
+
+    #Terminate the connection
+    disconnect
+}
+
+function query_exec()
+{   #Expected arguments: query
+
+    retriveState 
+    ./src/dbms.sh "$@"
+
+    return 0
+}
+
+##### Main #######
+function main ()
+{
+    
+    #init variables
+    init
+
+    #check if a connection is established
+    isConnected
+
+    #If connection is established
+    if [ $? = 0 ]
+    then 
+        #disconnect
+        if [ "$1" = "disconnect" ]
+        then 
+            disconnect  
+
+        elif [ "$1" = "connect" ] 
+        then 
+        
+            connect 
+
+            if [ -z $2 ] #Default (CLI connection)
+            then 
+                echo "Connected successfully"
+            
+            elif [ $2 = -it ] #Interactive mode
+            then 
+                startInteractive 
+            fi 
+
+        #Execute query
+        else 
+            query_exec "$@"
+        fi 
+   
+    #If there's no connection
+    else    
+        if [ -z $1 ]
+        then 
+            raiseError 1 "Error: Invalid command"
+        fi
+        #establish connection
+        if [ $1 = connect ] 
+        then 
+            if [ -z $2 ] #Default (CLI connection)
+            then 
+                connect 
+                raiseError $? "Connection failed! try again."
+                echo "Connected successfully"
+            
+            elif [ $2 = -it ] #Interactive mode
+            then 
+                connect 
+                startInteractive 
+                raiseError $? "Connection failed! try again."
+
+            else 
+                raiseError 1 "Invalid option!"
+            fi 
+            #not connected and acquiring query
+        else 
+            raiseError 1 "Invalid command! No connection is established."
+        fi
+    fi 
+}
+
+#Call main function
+main "$@"
