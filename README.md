@@ -1,212 +1,183 @@
-#Project Name
-database management search engine
+# hmDB
+---
 
+![demo](https://github.com/hossamkhalil01/hmDB/images/overview.gif)
 
-#Description
-This is a basic Database Management System project in Bash script
-you can create new database,delete specific database,list all available databse
-and select specific database.
-you can create tables and insert columns into the table with it's datatype (String or integer ),delete specific table,list all available tables inside a database,
-open specific table and select all records from this table,delete specific record from table
-and update certain record in table
+hmDB is a simple database engine designed using bash script for learning puroses, this engine can perform all basic database commands with a mySQL like syntax.
 
-#files
+hmDB simulates the working of the basic operations for a DBMS (Database management system) and can perform multiple tasks such as creating and deleting databases or tables, as well as performing operatins on the tables created.
 
-1-lib.sh:this script is shared functions that are used throughout the scripts To validate a string as a name 
+---
+## Table of Contents
 
-lib.sh functions:
--isNameValid(): validate name it must starts with char only and contains number, lower, upper and undrscore with length up to 10 char.Expected argument: Name(string)
+<!-- TOC -->
+- [Description](#description)
+- [Installation](#installation)
+- [How to Use](#how-to-use)
+  - [One Command Mode](one-command-mode)
+  - [Interactive Mode](interactive-mode)
+- [Features](features)
+- [Dependencies](#dependencies)
+- [Limitations](#limitations)
+- [Possible Improvements](#possible-improvements)
+- [Motivation](#motivation)
+<!-- /TOC --->
 
--isFound():Function to validate whether or not a dir or file does exist.
-    --Expected arguments: -d or -f (for dir /file) , file/dir Path
-        (-d for directory while -f for file)
+---
+## Description
 
--raiseError():Error handling (exception and exit)
-    --Expected arguments: return code, error message
-    return code: 1 for error and 0 for well executed
--isArgExist():check if arguments exists or not 
-    --Expected argument: variable
+The project consists of three main scripts:
 
--isArgNotExist():check if arguments exists or not 
-    --Expected argument: variable
+- [hmDB](https://github.com/hossamkhalil01/hmDB/blob/main/hmDB): that is the main script that's the interface for the user.
 
-2-dbms.sh:this script is used to manage database functions
+- [dbms.sh](https://github.com/hossamkhalil01/hmDB/blob/main/hmDBdir/src/dbms.sh) : inside the [hmDBdir/src](https://github.com/hossamkhalil01/hmDB/blob/main/hmDBdir/src) directory that is responsible for all database related commands.
 
-dbms.sh functions:
--validateDBName():Check if the database name is valid
-    --Expected argument: database name
+-  [table_mang.sh](https://github.com/hossamkhalil01/hmDB/blob/main/hmDBdir/src/table_mang.sh): inside the [hmDBdir/src](https://github.com/hossamkhalil01/hmDB/blob/main/hmDBdir/src) directory that is responsible for the table related commands.
 
--procQuery():to decide which command to run
-    --Expected argument: query (create,drop,use,show databases,help,close)
+along with two helper scripts inside the [hmDBdir/src/includes](https://github.com/hossamkhalil01/hmDB/tree/main/hmDBdir/src/includes) directory:
 
--initTableCmd():check if there are an opened DB and then calls table_mang.sh script to initialize table commands
-    --Expected arguments: table command
+- [lib.sh](https://github.com/hossamkhalil01/hmDB/blob/main/hmDBdir/src/includes/lib.sh): A script that contains helpfull functions that are used multiple times in different scripts.
+- [printTable.sh](https://github.com/hossamkhalil01/hmDB/blob/main/hmDBdir/src/includes/printTable.sh): A library that is used to create the table shape when printing the data in the terminal.
 
--createDB ():create new database
-    --Expected arguments: database Name
+##### Note:
 
--dropDB():function to delete existing database
-    --Expected arguments: databaseName
+the printTable.sh script is referenced from the [linux-cookbooks](https://github.com/gdbtek/linux-cookbooks/blob/master/libraries/util.bash) repository.
 
--showDBs ():function to list all availabe databases it expects no arguments
+The reposatory has a sample database already created for testing can be found inside the [hmDBdir/data/DBs](https://github.com/hossamkhalil01/hmDB/tree/main/hmDBdir/data/DBs) directory.
 
--closeDB():function to close opend database it expects no arguments
+there is also a created table inside this database called [student](https://github.com/hossamkhalil01/hmDB/tree/main/hmDBdir/data/DBs/hossam/student) , so that it can be used for illustartion purposes.
 
--useDB():function to open exsisting database
-    --Expected arguments: Database Name
 
+---
+## Installation
 
+First Clone the project in your working directory.
+```bash
+git clone https://github.com/hossamkhalil01/hmDB
+```
+or download the zipped file and unzip it in your working directory.
 
-3-table_mang.sh:this scipt is used to manage functions of the tables 
 
-table_mang.sh functions:
+change your working directory to the hmDB directory, then just run the [hmDB-install.sh](https://github.com/hossamkhalil01/hmDB/blob/main/hmDB-install.sh) script and it will take care of everything.
 
--validateName(): Check if the table name is valid
-    --Expected arguments: table name
+```bash
+sudo . hmDb-install.sh
+```
 
-- validateDtype():function to validate datatype of each column
-    --Expected arguments:  datatype
+you can also uninstall and remove any directories or files made by hmDB using the [hmDB-uninstall.sh](https://github.com/hossamkhalil01/hmDB/blob/main/hmDB-uninstall.sh) script.
 
--isConstrValid(): to validate column constrains
-    --Expected arguments: constraint(pk or nothing)
+```bash
+sudo . hmDb-uninstall.sh
+```
 
--insertRow():function to insert records in a table as a columns separated by colon
-Expected arguments: file path, array of coloums 
+##### Note:
+you need to give the permissions to the script so that it can write files and directories to the /usr/bin directory.
 
--isPkUnique():this function check if the primary key is unique or not and return 1 if false ,0 if true
-    --Expected argument: filePath, column number, col value
+---
+## Features
 
--validateCol_def():function to validate column definition ,it's name ,data type and constrain
-    --Expected arguments: colName datatype [constraint]
-coloumn defination string (separted by spaces)
+hmDB supports:
 
--sortCols():function to sort columns using primary key index
-this function check if there are index on the table or not if yes it check if this index in the first column or not if not it make the primary key index in the first column
-    --Expected arguments: primary key index
+- Two datatypes for tables data:
+    - **str**: (string) which accepts any characters and/or numbers.
+    - **int**: (integer) which accepts only numbers.
 
--createTable():function to create table
-at first the function check the table exists or not,then it calls validateCol_def function to validate columns definition from arguments and check that there is only one primary key in each table and then calls sortCols to make primary key in the first column then it calls insertRow function to add this columns on the table
-this function check first
-    --Expected arguments: tableName, {columns}
-    columns def syntax: "col1_name col1_dtype col1_constraint" "col2 col2 col2" ...
-    
--deleteTable():this function check if the table exists or not if yes and the deleted option is passed (-d) it delete the table with it's definition other wise delete the records of table only anf keep the definition of the table
-    --Expected arguments: tableName, [optional argument](-d)
+- primary key constraint using the keyword **pk** , only one primary key is allowed per table.
+- Validation of the databases and tables names, it can only start with a character and can't have special characters or spaces.
+- database queries such as : create, drop , show databases, and more.
+- table queries such as : select, update, insert, delete, describe, and more.
 
--listTables():this function check if there is tables in the selected database or not if yes it list all tables,expected no arguments
+- syntax is inspired from mySQL DBMS syntax with minimum changes, so that it is easier to use.
 
--dispTable():this function check if the table exist or not ,if yes it prints all records in this table
-    --Expected arguments:Table Name
+- All keywords in hmDB are case insensitive, meaning that pk = PK this is also true for all queries (select or SELECT).
 
--openTable():this function check if the table exists or not ,if yes it open this table
-    --Expected arguments:Table Name
 
--retreiveRow():this function used to get specific records
-    --Expected arguments: filePath, lineNumber
+for more information about the available queries as well as its syntax please refer to the [help](https://github.com/hossamkhalil01/hmDB/blob/main/hmDBdir/man/help) file inside the [hmDBdir/man](https://github.com/hossamkhalil01/hmDB/blob/main/hmDBdir/man/) directory
 
+or just type *help* inside the interactive mode.
 
--procRow():this function check datatype of each element for each row entered to the table
-    --Expected arguments: filePath, row values
+##### Note:
+the (*) character in mySQL meaning (all) is swapped to the **all** keyword.
 
--getCellValue():get the cell value 
-    --Expected arguments: filePath, rowNumber, colNumber
 
- -getRowNumber():this function extract the targeted column values and retrun row number of specific given value
-    --Expected arguments: filePath, colNumber, value , targetValue
+---
+## How to Use
 
--insertRecord():this function check if the table exists if yes it calls  procRow function to check the datatype of each row then calls isPk_unique function to check if the primary key uniuqe or not then it insert rows int table
-    --Expected arguments: tableName, {coloumns}
-    coloumns def syntax: "col1_value col2_value" ...
+Once the installation is done you are ready to use hmDB.
+hmDB has two modes of operations one command mode and interactive mode.
 
--isCol_exist():this function check if the column name exist in the table or not and return 1 if false,0 if true
-    --Expected arguments: filePath, colName
+#### One Command Mode
 
--displayColumn():Display the table and execlude the definition rows
-    --Expected arguments: filePath, colNum
+In one command mode you can execute one query at a time by passing it as a parameter for the hmDB script.
 
--processWhereCond():check if the condition exists (colName operator value) and save the rownumber of the record
-    --Expected arguments: where colName = value
+First run the connect command from anywhere in your machine through the terminal
 
--updateTable():update all records of the table when update command doesn't include where statment
-    --Expected argumets: filePath, colNum, newValue, arr of row numbers or (all for all)
+- run the command *connect* to the establish connection:
 
--procQuery():to decide which commands to run DDL or DML
-    --Expected arguments: query on tables
+```bash
+sudo hmDB connect
+```
 
--showTables():Check that there are no arguments passed and List all available tables
-    --Expected arguments: (None)
+- then run any query as follows:
 
--describeTable():Display the table definition rows
-    --Expected arguments: tableName(only)
+```bash
+sudo hmDB show databases
+```
 
--createTable():create new table
-    --Expected arguments: tableName, "col1Def" [colsDef],
-     columns def syntax: "colName col_dType [col constraint]"
+- you can keep running any number of commands you like after you finish use the *disconnect* command to close the connection using the (disconnect) command
 
--dropTable():deletes the entire table 
-    --Expected arguments: tableName
+```bash
+sudo hmDB disconnect
+```
 
--insertQuery():to insert new row values
-    --Expected arguments: tableName, values , rows array
+#### Interactive Mode
 
--deleteQuery(): check if where condition exist or not if yes delete specific rows else delete all recordes
-    --Expected arguments: tableName, [where , colName , operator, value]
+Once you enter the interactive mode just enter the query without the need to type hmDB at the beginning of each query.
 
--selectQuery():check the colname if it is specific column or all keyword to display all recordes and check if where condition exist or not if yes it select specific rows depends on the condition else it diplay all recordes
-    --Expected arguments: colName(all for all), From, TableName, [where, colName, operator, value]
+you can enter the program in interactive mode using the *-it* flag while running the *connect*.
 
--updateQuery():update recordes depend on where condition
-    --Expected arguments: tableName, set , colName, = , newValue , [where, colName, operator, value]
+```bash
+sudo hmDB connect -it
+```
 
-4-printTable.sh :We use this library to help us in printing tables like mysql tables format
+running this commad will result in entring you in interactive mode as follows
 
-5-hmDB-install.sh:this scripts installs the environment needed to run the project you need to run this script in sudo mode
 
-6-hmDB-uninstall.sh: this scripts uninstalls the  the project you need to run this script in sudo mode. 
+![interactive-mode](https://github.com/hossamkhalil01/hmDB/images/interactive-mode.JPG)
 
-7-hmDB:This script establishes the connection for your setuped database ,Needs to be ran with sudo permission 
+in interactive mode the program will wait for you to enter your query and output the result and wait for another.
 
-#how to use this program
+To exit the program and disconnect in this mode enter the *exit* command.
 
-1- you need to run hmDB-install.sh script in sudo mode to installs the environment needed tosetup and run the project
 
-2-then you need to run hmDB script in sudo mode to establishe the connection to your setuped database program, 
+## Dependencies
 
-    -if you want to o establis connection in interactive mode use this command: hmDB connect -it
-    -if you want to establish connection in one command mode use this command : hmDB connect
+- [bash shell](https://www.gnu.org/software/bash/)
+- Linux based operating system.
 
 
-3-create your databases 
 
-    -you can create more than one database
-    -database quieres are case insensitive (ex you can write create database databaseName or CREATE DATABASE databasename ,use databasename or USE databasename)
-    -create database command : create database databaseName
-    -drop database command : drop database databaseName
-    -show all databases command :show databases
-    -close opend database command : close
 
-4-create your tables on a selected database
-    
-    -tables quieres are case insensitive 
-    -any string must not include space separator, tables names , columns names and columns values names if there names separated by space it will give you invalid arguments 
-    -create table command :  create table tableName col1Name col1_dType [col1_pk], col2_nanme col2_dType [col2_pk],..
-    -display the difinition of the table : describe TableName 
-    -list all tables in the DB :  show tables
-    -drop existing table command : drop table tableName
 
-5-create your Data Manipulation commands
 
-    -any string must not include space separator
-    -all arguments of each command must be separated by space 
-    -in insert statement to separate mutliple row values use comma (,)
-    -insert row values into specific table :  insert into tableName values record1Values(col1_value col2_value col3_value), record2Values, ....
-    -select data from specific table command : select colName/all from tableName [where condition] --> where colName = value
-    -delete table or delete specific rows commands : delete from tableName [where condition] --> where colName = value 
-    -update recordes on the table command : update tableName set colName = newValue [where condition] --> where colName = value 
+## Limitations
 
-#ready to use 
+- A potential shortcoming could appear when the tables (files) are modified externally either by another program or manually.
 
--you can use existing created database called hossam in DBs directory and it contains example for created table ,without setup the database 
--you just run sudo ./hmDB connect -it and use it 
+- hmDB cannot handle the " " as a represntation for the string rather it considers the input as string unless otherwise is specified by the table's datatype.
 
 
+## Possible Improvements
+
+- Implementation for more functionalities when it comes to the operators rather the the *=* operator only.
+
+- Enhancing the insertion functionality, where you can specify which columns to insert values into rather than going through them in order.
+
+##### Note:
+
+hmDB considers only the entered columns in order and any other unspecified columns are assigned *NULL* values
+
+
+## Motivation
+
+hmDB was built to experience shell scripting as well as understanding how to use bash commands to convert text files into a file system representing a database utilizing tools such as awk and sed.
